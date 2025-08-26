@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
     const sellers = db.collection('sellers')
     
     // クエリ構築
-    const query: any = {}
+    const query: Record<string, unknown> = {}
     
     if (companyName) {
       // 会社名の部分一致検索（大小文字無視）
@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
       }
     })
     
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Sellers fetch error:', error, { requestId })
     return createInternalErrorResponse(requestId)
   }
@@ -163,7 +163,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     )
     
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Seller registration error:', error, { requestId })
     return createInternalErrorResponse(requestId)
   }

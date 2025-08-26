@@ -1,5 +1,5 @@
 // ログアウトAPI
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { clearAuthCookie, getCurrentUser } from '@/lib/auth'
 
 export async function POST() {
@@ -21,7 +21,7 @@ export async function POST() {
       message: 'ログアウトしました'
     })
     
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Logout error:', error)
     
     // エラーが発生してもCookieはクリアする

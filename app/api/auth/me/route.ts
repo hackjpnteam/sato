@@ -1,5 +1,5 @@
 // 現在のユーザー情報取得API
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { getCurrentUser } from '@/lib/auth'
 import clientPromise from '@/lib/mongodb'
 import { ObjectId } from 'mongodb'
@@ -46,7 +46,7 @@ export async function GET() {
       }
     })
     
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Get current user error:', error)
     return NextResponse.json({
       user: null

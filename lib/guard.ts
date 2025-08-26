@@ -75,7 +75,7 @@ export function createErrorResponse(
   code?: string,
   requestId?: string
 ) {
-  const error: any = { error: message }
+  const error: Record<string, unknown> = { error: message }
   if (code) error.code = code
   if (requestId) error.requestId = requestId
   
