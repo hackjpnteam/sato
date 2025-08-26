@@ -1,11 +1,11 @@
 // GENERATED: 半導体在庫売買サイト（Claude Rule適用）
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prismaMock } from '@/lib/prisma-mock'
 
-export async function GET(_request: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions)
     

@@ -3,7 +3,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -64,7 +64,7 @@ export default function AdminSettingsPage() {
       // 実際の実装では API に設定を送信
       await new Promise(resolve => setTimeout(resolve, 1000))
       toast.success('設定を保存しました')
-    } catch (_error: unknown) {
+    } catch {
       toast.error('設定の保存に失敗しました')
     } finally {
       setSaving(false)

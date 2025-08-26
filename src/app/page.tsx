@@ -1,17 +1,14 @@
 // MongoDB版 簡易UIホームページ
 'use client'
 
-import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { 
-  Search, 
   Shield, 
   TrendingUp, 
   Package, 
@@ -81,7 +78,7 @@ export default function HomePage() {
         const response = await fetch('/api/auth/me')
         const data = await response.json()
         setUser(data.user)
-      } catch (error) {
+      } catch {
         console.error('Failed to fetch user:', error)
       } finally {
         setLoading(false)
@@ -111,7 +108,7 @@ export default function HomePage() {
       } else {
         toast.error(result.error || '登録に失敗しました')
       }
-    } catch (error) {
+    } catch {
       toast.error('登録中にエラーが発生しました')
     }
   }
@@ -137,7 +134,7 @@ export default function HomePage() {
       } else {
         toast.error(result.error || 'ログインに失敗しました')
       }
-    } catch (error) {
+    } catch {
       toast.error('ログイン中にエラーが発生しました')
     }
   }
@@ -148,7 +145,7 @@ export default function HomePage() {
       await fetch('/api/auth/logout', { method: 'POST' })
       setUser(null)
       toast.success('ログアウトしました')
-    } catch (error) {
+    } catch {
       toast.error('ログアウト中にエラーが発生しました')
     }
   }
@@ -193,7 +190,7 @@ export default function HomePage() {
       } else {
         toast.error(result.error || '出品作成に失敗しました')
       }
-    } catch (error) {
+    } catch {
       toast.error('出品作成中にエラーが発生しました')
     }
   }
