@@ -4,7 +4,7 @@ import { getCurrentUser } from '@/lib/auth'
 import clientPromise from '@/lib/mongodb'
 import { ObjectId } from 'mongodb'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const user = getCurrentUser()
     

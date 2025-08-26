@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import clientPromise from '@/lib/mongodb'
 import { ListingSchema } from '@/lib/validate'
-import { requireSeller, requireOwnerOrAdmin, createInternalErrorResponse } from '@/lib/guard'
+import { requireOwnerOrAdmin, createInternalErrorResponse } from '@/lib/guard'
 import { ObjectId } from 'mongodb'
 
 // 個別出品取得

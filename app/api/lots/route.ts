@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     const lots = db.collection('inventoryLots')
     
     // クエリ構築
-    const query: any = {}
+    const query: Record<string, unknown> = {}
     
     if (partNumber) {
       query.partNumber = { $regex: partNumber, $options: 'i' }

@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
     const listings = db.collection('listings')
     
     // クエリ構築
-    const query: any = { status }
+    const query: Record<string, unknown> = { status }
     
     if (q) {
       // 部品番号の前方一致検索（大小文字無視）

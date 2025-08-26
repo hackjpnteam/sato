@@ -180,11 +180,11 @@ export async function POST(request: NextRequest) {
       await session.endSession()
     }
     
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Order creation error:', error, { requestId })
     
     // ビジネスロジックエラーのハンドリング
-    switch (error.message) {
+    switch ((error as Error).message) {
       case 'LISTING_NOT_FOUND':
         return NextResponse.json(
           { error: '出品が見つかりません', code: 'LISTING_NOT_FOUND' },
