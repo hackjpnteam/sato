@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
         { 
           error: 'バリデーションエラー',
           code: 'VALIDATION_ERROR',
-          details: validationResult.error.errors 
+          details: validationResult.error.issues 
         },
         { status: 400 }
       )

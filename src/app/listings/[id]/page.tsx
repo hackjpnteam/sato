@@ -224,7 +224,7 @@ export default function ListingDetailPage() {
                 </div>
                 {displayPhotos.length > 1 && (
                   <div className="flex gap-2">
-                    {displayPhotos.map((photo, index) => (
+                    {displayPhotos.map((photo: string, index: number) => (
                       <button
                         key={index}
                         onClick={() => setSelectedPhoto(index)}

@@ -79,7 +79,7 @@ export default function HomePage() {
         const data = await response.json()
         setUser(data.user)
       } catch {
-        console.error('Failed to fetch user:', error)
+        console.error('Failed to fetch user:')
       } finally {
         setLoading(false)
       }

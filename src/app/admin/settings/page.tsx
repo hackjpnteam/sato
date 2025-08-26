@@ -79,13 +79,16 @@ export default function AdminSettingsPage() {
   }
 
   const handleNestedInputChange = (parentKey: string, childKey: string, value: unknown) => {
-    setSettings(prev => ({
-      ...prev,
-      [parentKey]: {
-        ...prev[parentKey as keyof typeof prev],
-        [childKey]: value
+    setSettings(prev => {
+      const parentValue = prev[parentKey as keyof typeof prev] as Record<string, unknown>
+      return {
+        ...prev,
+        [parentKey]: {
+          ...parentValue,
+          [childKey]: value
+        }
       }
-    }))
+    })
   }
 
   return (

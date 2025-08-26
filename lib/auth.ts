@@ -20,7 +20,7 @@ export interface JwtPayload {
 
 // JWT作成（デフォルト有効期限：7日）
 export function signJwt(payload: Omit<JwtPayload, 'iat' | 'exp'>, expiresIn: string = '7d'): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn })
+  return jwt.sign(payload, JWT_SECRET, { expiresIn } as jwt.SignOptions)
 }
 
 // JWT検証
