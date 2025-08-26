@@ -216,7 +216,7 @@ export default function HomePage() {
           半導体部品マーケットプレイス
         </h1>
         <p className="text-xl text-gray-600 mb-8">
-          MongoDB + Next.js App Router で構築された信頼できるプラットフォーム
+          信頼できる半導体部品の売買プラットフォーム
         </p>
 
         {user ? (
@@ -518,9 +518,9 @@ export default function HomePage() {
           <Card>
             <CardHeader>
               <Shield className="h-8 w-8 text-primary mb-2" />
-              <CardTitle>JWT認証</CardTitle>
+              <CardTitle>安全な取引</CardTitle>
               <CardDescription>
-                HttpOnly Cookieを使用した安全な認証システム
+                セキュアな認証システムで安心・安全な取引を実現
               </CardDescription>
             </CardHeader>
           </Card>
@@ -528,9 +528,9 @@ export default function HomePage() {
           <Card>
             <CardHeader>
               <Zap className="h-8 w-8 text-primary mb-2" />
-              <CardTitle>MongoDB Atlas</CardTitle>
+              <CardTitle>高速検索</CardTitle>
               <CardDescription>
-                スケーラブルなクラウドデータベースによる高速データ処理
+                部品番号やメーカー名で瞬時に在庫を検索
               </CardDescription>
             </CardHeader>
           </Card>
@@ -538,59 +538,47 @@ export default function HomePage() {
           <Card>
             <CardHeader>
               <Package className="h-8 w-8 text-primary mb-2" />
-              <CardTitle>在庫トランザクション</CardTitle>
+              <CardTitle>在庫管理</CardTitle>
               <CardDescription>
-                注文時の自動在庫減算とロールバック機能
+                リアルタイムの在庫管理と自動更新システム
               </CardDescription>
             </CardHeader>
           </Card>
         </div>
       </section>
 
-      {/* API Endpoints */}
+      {/* Services */}
       <section className="mb-12">
         <Card>
           <CardHeader>
-            <CardTitle>実装済みAPI エンドポイント</CardTitle>
+            <CardTitle>提供サービス</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <h4 className="font-semibold mb-2">認証API</h4>
-                <ul className="text-sm space-y-1 text-gray-600">
-                  <li>POST /api/auth/register</li>
-                  <li>POST /api/auth/login</li>
-                  <li>POST /api/auth/logout</li>
-                  <li>GET /api/auth/me</li>
+                <h4 className="font-semibold mb-2 flex items-center">
+                  <Users className="h-5 w-5 mr-2" />
+                  購入者向け
+                </h4>
+                <ul className="text-sm space-y-2 text-gray-600">
+                  <li>✓ 幅広い半導体部品の検索</li>
+                  <li>✓ 複数サプライヤーからの価格比較</li>
+                  <li>✓ 安全な決済システム</li>
+                  <li>✓ リアルタイム在庫確認</li>
+                  <li>✓ 品質保証付き部品の購入</li>
                 </ul>
               </div>
               <div>
-                <h4 className="font-semibold mb-2">出品API</h4>
-                <ul className="text-sm space-y-1 text-gray-600">
-                  <li>GET /api/listings</li>
-                  <li>POST /api/listings</li>
-                  <li>GET /api/listings/[id]</li>
-                  <li>PATCH /api/listings/[id]</li>
-                  <li>DELETE /api/listings/[id]</li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="font-semibold mb-2">在庫ロットAPI</h4>
-                <ul className="text-sm space-y-1 text-gray-600">
-                  <li>GET /api/lots</li>
-                  <li>POST /api/lots</li>
-                  <li>GET /api/lots/[id]</li>
-                  <li>PATCH /api/lots/[id]</li>
-                </ul>
-              </div>
-              <div>
-                <h4 className="font-semibold mb-2">注文・出品者API</h4>
-                <ul className="text-sm space-y-1 text-gray-600">
-                  <li>POST /api/orders</li>
-                  <li>GET /api/orders/[id]</li>
-                  <li>PATCH /api/orders/[id]</li>
-                  <li>GET /api/sellers</li>
-                  <li>POST /api/sellers</li>
+                <h4 className="font-semibold mb-2 flex items-center">
+                  <TrendingUp className="h-5 w-5 mr-2" />
+                  販売者向け
+                </h4>
+                <ul className="text-sm space-y-2 text-gray-600">
+                  <li>✓ 簡単な出品プロセス</li>
+                  <li>✓ 在庫管理ツール</li>
+                  <li>✓ 売上分析レポート</li>
+                  <li>✓ 自動価格調整機能</li>
+                  <li>✓ グローバルな顧客へのアクセス</li>
                 </ul>
               </div>
             </div>
@@ -601,10 +589,10 @@ export default function HomePage() {
       {/* Contact */}
       <section className="text-center py-12 bg-gray-50 rounded-lg">
         <h2 className="text-2xl font-bold mb-4">
-          MongoDB版半導体マーケットプレイス
+          半導体部品の売買をもっと簡単に
         </h2>
         <p className="text-gray-600 mb-4">
-          Next.js App Router + MongoDB Atlas + JWT認証で構築
+          安心・安全・スピーディーな取引をサポートします
         </p>
         <p className="text-sm text-gray-500">
           お問い合わせ：team@hackjpn.com
