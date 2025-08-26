@@ -3,18 +3,16 @@
 'use client'
 
 import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
 import { Badge } from '@/components/ui/badge'
 import { 
-  Settings, 
   Save, 
   Bell, 
   Shield, 
-  Mail,
   CreditCard,
   Globe,
   AlertTriangle,
@@ -66,21 +64,21 @@ export default function AdminSettingsPage() {
       // 実際の実装では API に設定を送信
       await new Promise(resolve => setTimeout(resolve, 1000))
       toast.success('設定を保存しました')
-    } catch (error) {
+    } catch (_error: unknown) {
       toast.error('設定の保存に失敗しました')
     } finally {
       setSaving(false)
     }
   }
 
-  const handleInputChange = (key: string, value: any) => {
+  const handleInputChange = (key: string, value: unknown) => {
     setSettings(prev => ({
       ...prev,
       [key]: value
     }))
   }
 
-  const handleNestedInputChange = (parentKey: string, childKey: string, value: any) => {
+  const handleNestedInputChange = (parentKey: string, childKey: string, value: unknown) => {
     setSettings(prev => ({
       ...prev,
       [parentKey]: {

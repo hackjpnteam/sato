@@ -73,7 +73,7 @@ export default function SignUpPage() {
       } else {
         router.push('/auth/signin?registered=true')
       }
-    } catch (error) {
+    } catch (_error: unknown) {
       setError('登録に失敗しました')
     } finally {
       setLoading(false)

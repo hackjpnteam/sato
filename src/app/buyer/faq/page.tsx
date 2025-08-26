@@ -1,9 +1,9 @@
 // GENERATED: 半導体在庫売買サイト（Claude Rule適用）
 
 import Link from 'next/link'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { HelpCircle, Search, CreditCard, Package, Shield, Mail } from 'lucide-react'
+import { HelpCircle, CreditCard, Package, Shield, Mail } from 'lucide-react'
 
 export default function BuyerFAQPage() {
   const faqs = [

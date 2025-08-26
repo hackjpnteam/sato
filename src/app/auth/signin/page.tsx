@@ -36,7 +36,7 @@ export default function SignInPage() {
         router.push('/')
         router.refresh()
       }
-    } catch (error) {
+    } catch (_error: unknown) {
       setError('ログインに失敗しました')
     } finally {
       setLoading(false)

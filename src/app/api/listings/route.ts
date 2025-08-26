@@ -5,7 +5,7 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prismaMock } from '@/lib/prisma-mock'
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const listings = await prismaMock.listing.findMany()
     return NextResponse.json(listings)

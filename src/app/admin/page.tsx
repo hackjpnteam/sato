@@ -4,7 +4,6 @@
 
 import { useEffect, useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { 
   Users, 
   Package, 
@@ -28,6 +27,14 @@ interface DashboardStats {
   todayRevenue: number
 }
 
+interface Activity {
+  id: number
+  type: string
+  description: string
+  time: string
+  status: 'info' | 'warning' | 'success' | 'error'
+}
+
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<DashboardStats>({
     totalUsers: 0,
@@ -40,7 +47,7 @@ export default function AdminDashboardPage() {
     todayRevenue: 0
   })
 
-  const [recentActivities, setRecentActivities] = useState<any[]>([])
+  const [recentActivities, setRecentActivities] = useState<Activity[]>([])
 
   useEffect(() => {
     // モックデータ

@@ -53,7 +53,7 @@ export async function POST(request: Request) {
         contactName,
         contactPhone,
         address,
-        role: role as any,
+        role: role as 'buyer' | 'seller',
         emailVerified: new Date()
       }
     })
