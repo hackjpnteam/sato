@@ -303,21 +303,12 @@ export default function HomePage() {
         </p>
 
         {user ? (
-          <div className="bg-white rounded-lg p-4 md:p-6 max-w-md mx-auto">
-            <div className="flex items-center justify-center mb-4">
-              <CheckCircle className="h-6 w-6 mr-2" />
-              <span className="text-lg font-semibold">ログイン中</span>
-            </div>
-            <div className="text-left space-y-2 mb-4 text-sm md:text-base">
-              <p className="break-all"><strong>Email:</strong> {user.email}</p>
-              <p><strong>Name:</strong> {user.name || '未設定'}</p>
-              <p><strong>Role:</strong> {user.role}</p>
-              <p><strong>Email認証:</strong> {user.emailVerified ? '済み' : '未認証'}</p>
-            </div>
-            <div className="space-y-2">
+          <div>
+            <div className="flex flex-col sm:flex-row justify-center gap-4 px-4">
               <Button 
                 onClick={() => setShowListingForm(true)}
-                className="w-full text-sm md:text-base"
+                size="lg"
+                className="w-full sm:w-auto"
                 disabled={!['seller', 'admin'].includes(user.role)}
               >
                 <Plus className="mr-2" />
@@ -325,19 +316,22 @@ export default function HomePage() {
               </Button>
               <Button 
                 onClick={handleLogout}
+                size="lg" 
                 variant="outline"
-                className="w-full text-sm md:text-base"
+                className="w-full sm:w-auto"
               >
                 ログアウト
               </Button>
             </div>
             {!['seller', 'admin'].includes(user.role) && (
-              <Alert className="mt-4">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription className="text-sm">
-                  出品するにはセラー権限が必要です。管理者にお問い合わせください。
-                </AlertDescription>
-              </Alert>
+              <div className="mt-4 max-w-md mx-auto">
+                <Alert className="text-center">
+                  <AlertCircle className="h-4 w-4 mx-auto mb-1" />
+                  <AlertDescription className="text-sm">
+                    出品するにはセラー権限が必要です。管理者にお問い合わせください。
+                  </AlertDescription>
+                </Alert>
+              </div>
             )}
           </div>
         ) : (
