@@ -1,6 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { connectToDatabase } from '@/lib/mongodb'
+import { ObjectId } from 'mongodb'
 import { z } from 'zod'
+import jwt from 'jsonwebtoken'
+
+const JWT_SECRET = process.env.JWT_SECRET || 'default-secret-key-for-development'
+
+interface JwtPayload {
+  userId: string
+  email: string
+  role: string
+  iat?: number
+  exp?: number
+}
+
+function verifyToken(token: string): JwtPayload | null {
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload
+    return decoded
+  } catch (error) {
+    return null
+  }
+}
 
 // GET /api/listings - 出品一覧・検索
 export async function GET(request: NextRequest) {
@@ -112,10 +133,45 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // TODO: Get user from token
-    const sellerId = 'temp-seller-id' // This should come from JWT token
-    
-    const { db } = await connectToDatabase()
+    // Get user from token
+    const token = request.cookies.get('token')?.value
+    if (!token) {
+      return NextResponse.json(
+        { error: 'ログインが必要です' },
+        { status: 401 }
+      )
+    }
+
+    const decoded = verifyToken(token)
+    if (!decoded) {
+      return NextResponse.json(
+        { error: '認証に失敗しました' },
+        { status: 401 }
+      )
+    }
+
+    // Get user information
+    const user = await db.collection('users').findOne(
+      { _id: new ObjectId(decoded.userId) },
+      { projection: { passwordHash: 0 } }
+    )
+
+    if (!user) {
+      return NextResponse.json(
+        { error: 'ユーザーが見つかりません' },
+        { status: 404 }
+      )
+    }
+
+    // Check if user has company information registered
+    if (!user.companyName) {
+      return NextResponse.json(
+        { error: '出品するには会社情報の登録が必要です', code: 'COMPANY_INFO_REQUIRED' },
+        { status: 403 }
+      )
+    }
+
+    const sellerId = user._id.toString()
     
     const listing = {
       ...validationResult.data,

@@ -35,7 +35,7 @@ function Header() {
               📋 出品一覧
             </a>
             <div className="ml-4 pl-4 border-l border-gray-200">
-              <a href="/" className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm">
+              <a href="/account" className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm">
                 👤 アカウント
               </a>
             </div>
@@ -49,7 +49,7 @@ function Header() {
             <a href="/listings" className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all">
               📋
             </a>
-            <a href="/" className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <a href="/account" className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
               👤
             </a>
           </div>

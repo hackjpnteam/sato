@@ -103,6 +103,10 @@ interface User {
   name: string
   role: string
   emailVerified: boolean
+  companyName?: string
+  companyAddress?: string
+  companyPhone?: string
+  companyDescription?: string
 }
 
 interface ListingFormData {
@@ -240,9 +244,9 @@ export default function HomePage() {
   const handleCreateListing = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    // セラーロールチェック
-    if (!user?.role || !['seller', 'admin'].includes(user.role)) {
-      alert('出品するにはセラー権限が必要です')
+    // 会社情報登録チェック
+    if (!user?.companyName) {
+      alert('出品するには会社情報の登録が必要です。アカウント設定で会社情報を登録してください。')
       return
     }
     
@@ -302,54 +306,80 @@ export default function HomePage() {
           信頼できる半導体部品の売買プラットフォーム
         </p>
 
-        {user ? (
-          <div>
-            <div className="flex flex-col sm:flex-row justify-center gap-4 px-4">
-              <Button 
-                onClick={() => setShowListingForm(true)}
-                size="lg"
-                className="w-full sm:w-auto"
-                disabled={!['seller', 'admin'].includes(user.role)}
+        {/* 売る・買う動線 */}
+        <div className="max-w-4xl mx-auto px-4 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* 買う */}
+            <div className="bg-white rounded-2xl p-6 border-2 border-green-200 hover:border-green-400 transition-colors">
+              <div className="text-5xl mb-4">🛒</div>
+              <h2 className="text-xl font-bold text-green-700 mb-2">部品を購入する</h2>
+              <p className="text-gray-600 mb-4 text-sm">
+                必要な半導体部品を検索・比較して購入
+              </p>
+              <a 
+                href="/search"
+                className="w-full inline-block px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors font-medium"
               >
-                <Plus className="mr-2" />
-                出品を作成
-              </Button>
-              <Button 
-                onClick={handleLogout}
-                size="lg" 
-                variant="outline"
-                className="w-full sm:w-auto"
-              >
-                ログアウト
-              </Button>
+                部品を探す
+              </a>
             </div>
-            {!['seller', 'admin'].includes(user.role) && (
-              <div className="mt-4 max-w-md mx-auto">
-                <Alert className="text-center">
-                  <AlertCircle className="h-4 w-4 mx-auto mb-1" />
-                  <AlertDescription className="text-sm">
-                    出品するにはセラー権限が必要です。管理者にお問い合わせください。
-                  </AlertDescription>
-                </Alert>
-              </div>
-            )}
+
+            {/* 売る */}
+            <div className="bg-white rounded-2xl p-6 border-2 border-blue-200 hover:border-blue-400 transition-colors">
+              <div className="text-5xl mb-4">💰</div>
+              <h2 className="text-xl font-bold text-blue-700 mb-2">部品を販売する</h2>
+              <p className="text-gray-600 mb-4 text-sm">
+                在庫部品を出品して全国の企業に販売
+              </p>
+              {user ? (
+                user.companyName ? (
+                  <Button 
+                    onClick={() => setShowListingForm(true)}
+                    className="w-full bg-blue-600 hover:bg-blue-700"
+                  >
+                    出品を作成
+                  </Button>
+                ) : (
+                  <a 
+                    href="/account"
+                    className="w-full inline-block px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium text-center"
+                  >
+                    会社情報を登録
+                  </a>
+                )
+              ) : (
+                <Button 
+                  onClick={() => setShowRegisterForm(true)}
+                  className="w-full bg-blue-600 hover:bg-blue-700"
+                >
+                  アカウント作成
+                </Button>
+              )}
+            </div>
           </div>
-        ) : (
-          <div className="flex flex-col sm:flex-row justify-center gap-4 px-4">
+        </div>
+
+        {/* ログイン/ログアウトボタン */}
+        {user && (
+          <div className="flex justify-center">
             <Button 
-              onClick={() => setShowRegisterForm(true)}
-              size="lg"
-              className="w-full sm:w-auto"
+              onClick={handleLogout}
+              variant="outline"
+              className="text-sm"
             >
-              新規登録
+              ログアウト
             </Button>
+          </div>
+        )}
+
+        {!user && (
+          <div className="flex justify-center">
             <Button 
               onClick={() => setShowLoginForm(true)}
-              size="lg" 
               variant="outline"
-              className="w-full sm:w-auto"
+              className="text-sm"
             >
-              ログイン
+              すでにアカウントをお持ちの方はこちら
             </Button>
           </div>
         )}

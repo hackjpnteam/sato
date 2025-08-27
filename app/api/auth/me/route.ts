@@ -52,7 +52,11 @@ export async function GET(request: NextRequest) {
         email: user.email,
         name: user.name,
         role: user.role,
-        emailVerified: user.emailVerified
+        emailVerified: user.emailVerified,
+        companyName: user.companyName,
+        companyAddress: user.companyAddress,
+        companyPhone: user.companyPhone,
+        companyDescription: user.companyDescription
       }
     })
   } catch (error) {
