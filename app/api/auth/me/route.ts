@@ -1,72 +1,12 @@
-import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
-import { connectToDatabase } from '@/lib/mongodb'
-import { ObjectId } from 'mongodb'
-import jwt from 'jsonwebtoken'
+import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
-export const runtime = 'nodejs'
-
-const JWT_SECRET = process.env.JWT_SECRET || 'default-secret-key-for-development'
-
-interface JwtPayload {
-  userId: string
-  email: string
-  role: string
-  iat?: number
-  exp?: number
-}
-
-function verifyToken(token: string): JwtPayload | null {
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload
-    return decoded
-  } catch (error) {
-    return null
-  }
-}
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const runtime = "nodejs";
 
 export async function GET() {
-  try {
-    const cookieStore = cookies()
-    const token = cookieStore.get('token')?.value
-
-    if (!token) {
-      return NextResponse.json({ user: null }, { status: 200 })
-    }
-
-    const decoded = verifyToken(token)
-    if (!decoded || !decoded.userId) {
-      return NextResponse.json({ user: null }, { status: 200 })
-    }
-
-    const { db } = await connectToDatabase()
-    
-    const user = await db.collection('users').findOne(
-      { _id: new ObjectId(decoded.userId) },
-      { projection: { passwordHash: 0 } }
-    )
-
-    if (!user) {
-      return NextResponse.json({ user: null }, { status: 200 })
-    }
-
-    return NextResponse.json({
-      user: {
-        id: user._id.toString(),
-        email: user.email,
-        name: user.name,
-        role: user.role,
-        emailVerified: user.emailVerified,
-        companyName: user.companyName,
-        companyAddress: user.companyAddress,
-        companyPhone: user.companyPhone,
-        companyDescription: user.companyDescription
-      }
-    })
-  } catch (error) {
-    console.error('Get user error:', error)
-    return NextResponse.json({ user: null }, { status: 200 })
-  }
+  const cookieStore = cookies();
+  const token = cookieStore.get("token");
+  return NextResponse.json({ ok: true, token: token?.value ?? null });
 }
