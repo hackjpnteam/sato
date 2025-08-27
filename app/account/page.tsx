@@ -136,10 +136,20 @@ export default function AccountPage() {
   const fetchUserListings = async () => {
     setLoadingListings(true)
     try {
-      const response = await fetch('/api/user/listings')
-      if (response.ok) {
-        const data = await response.json()
-        setUserListings(data.listings || [])
+      // If user has management role, fetch all listings via admin API
+      if (user && (user.role === 'admin' || user.role === 'seller')) {
+        const response = await fetch('/api/admin/listings?page=1&limit=50')
+        if (response.ok) {
+          const data = await response.json()
+          setUserListings(data.listings || [])
+        }
+      } else {
+        // For regular users, fetch only their own listings
+        const response = await fetch('/api/user/listings')
+        if (response.ok) {
+          const data = await response.json()
+          setUserListings(data.listings || [])
+        }
       }
     } catch (error) {
       console.error('Failed to fetch listings:', error)
@@ -207,13 +217,28 @@ export default function AccountPage() {
   }
 
   const handleDeleteListing = async (listingId: string) => {
-    if (!confirm('この出品を削除してもよろしいですか？この操作は取り消せません。')) {
+    const listing = userListings.find(l => l._id === listingId)
+    const isOwnListing = listing && listing.sellerId === user?.id
+    const isManagementUser = user && (user.role === 'admin' || user.role === 'seller')
+    
+    let confirmMessage = 'この出品を削除してもよろしいですか？この操作は取り消せません。'
+    if (isManagementUser && !isOwnListing) {
+      confirmMessage = `管理権限により他のユーザーの出品「${listing?.partNumber || ''}」を削除しようとしています。この操作は取り消せません。削除してもよろしいですか？`
+    }
+    
+    if (!confirm(confirmMessage)) {
       return
     }
 
     setDeletingIds(prev => new Set(Array.from(prev).concat(listingId)))
     try {
-      const response = await fetch(`/api/user/listings?id=${listingId}`, {
+      // Use admin API for management users, user API for regular users
+      const isManagementUser = user && (user.role === 'admin' || user.role === 'seller')
+      const apiEndpoint = isManagementUser 
+        ? `/api/admin/listings?id=${listingId}`
+        : `/api/user/listings?id=${listingId}`
+        
+      const response = await fetch(apiEndpoint, {
         method: 'DELETE'
       })
 
@@ -451,7 +476,14 @@ export default function AccountPage() {
         <div className="space-y-6">
           <div className="bg-white rounded-2xl p-6 border shadow-sm">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold text-gray-900">出品管理</h2>
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">出品管理</h2>
+                {user && (user.role === 'admin' || user.role === 'seller') && (
+                  <p className="text-sm text-blue-600 mt-1">
+                    管理権限により全ての出品を管理できます
+                  </p>
+                )}
+              </div>
             </div>
 
             {loadingListings ? (
@@ -490,6 +522,11 @@ export default function AccountPage() {
                               {listing.partNumber}
                             </h3>
                             <p className="text-gray-600 mb-2">{listing.manufacturer}</p>
+                            {user && (user.role === 'admin' || user.role === 'seller') && listing.sellerName && (
+                              <p className="text-sm text-purple-600 mb-2">
+                                出品者: {listing.sellerName} {listing.sellerCompany && `(${listing.sellerCompany})`}
+                              </p>
+                            )}
                             
                             <div className="flex flex-wrap gap-2 mb-3">
                               <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
@@ -538,6 +575,11 @@ export default function AccountPage() {
                           disabled={deletingIds.has(listing._id)}
                           variant="danger"
                           className="text-sm"
+                          title={
+                            user && (user.role === 'admin' || user.role === 'seller') && listing.sellerId !== user.id
+                              ? '管理権限により削除'
+                              : '自分の出品を削除'
+                          }
                         >
                           {deletingIds.has(listing._id) ? '削除中...' : '削除'}
                         </Button>

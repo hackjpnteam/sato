@@ -113,6 +113,8 @@ export async function GET(request: Request) {
 
         return {
           id: listing._id.toString(),
+          _id: listing._id.toString(), // Also include _id for compatibility
+          sellerId: listing.sellerId,
           partNumber: listing.partNumber,
           manufacturer: listing.manufacturer,
           category: listing.category,
@@ -126,6 +128,8 @@ export async function GET(request: Request) {
             name: seller.name || 'ー',
             companyName: seller.companyName || 'ー'
           } : null,
+          sellerName: seller?.name || 'ー',
+          sellerCompany: seller?.companyName || 'ー',
           questionCount,
           totalValue: listing.quantity * listing.unitPriceJPY,
           status: listing.quantity > 0 ? 'active' : 'soldout',

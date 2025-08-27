@@ -117,16 +117,26 @@ export async function DELETE(request: Request) {
 
     const { db } = await connectToDatabase()
 
-    // 出品が存在し、かつユーザーのものかチェック
+    // 出品が存在するかチェック
     const listing = await db.collection('listings').findOne({
-      _id: new ObjectId(listingId),
-      sellerId: decoded.userId
+      _id: new ObjectId(listingId)
     })
 
     if (!listing) {
       return NextResponse.json(
-        { error: '出品が見つからないか、削除する権限がありません' },
+        { error: '出品が見つかりません' },
         { status: 404 }
+      )
+    }
+
+    // 権限チェック: 自分の出品または管理権限を持つユーザー
+    const isOwner = listing.sellerId === decoded.userId
+    const hasManagementRole = decoded.role === 'admin' || decoded.role === 'seller'
+    
+    if (!isOwner && !hasManagementRole) {
+      return NextResponse.json(
+        { error: '削除する権限がありません' },
+        { status: 403 }
       )
     }
 
