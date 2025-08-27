@@ -4,6 +4,10 @@ import { connectToDatabase } from '@/lib/mongodb'
 import { z } from 'zod'
 import jwt from 'jsonwebtoken'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+export const runtime = 'nodejs'
+
 const JWT_SECRET = process.env.JWT_SECRET || 'default-secret-key-for-development'
 
 function generateToken(payload: { userId: string; email: string; role: string }): string {

@@ -3,6 +3,10 @@ import bcrypt from 'bcryptjs'
 import { connectToDatabase } from '@/lib/mongodb'
 import { z } from 'zod'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+export const runtime = 'nodejs'
+
 const registerSchema = z.object({
   email: z.string().email('有効なメールアドレスを入力してください'),
   password: z.string().min(8, 'パスワードは8文字以上である必要があります'),
