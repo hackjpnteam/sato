@@ -17,6 +17,7 @@ interface User {
 
 interface Listing {
   _id: string
+  sellerId?: string
   partNumber: string
   manufacturer: string
   quantity: number
@@ -27,6 +28,8 @@ interface Listing {
   warranty?: string
   createdAt: string
   questionCount: number
+  sellerName?: string
+  sellerCompany?: string
 }
 
 // Fallback UI components
