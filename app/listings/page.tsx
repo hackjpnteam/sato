@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 
 interface Listing {
-  id: string
+  _id: string
   partNumber: string
   manufacturer: string
   quantity: number
@@ -67,7 +67,7 @@ export default function ListingsPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {listings.map((listing) => (
-              <div key={listing.id} className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+              <div key={listing._id} className="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
                 {/* Product Image */}
                 <div className="aspect-square w-full mb-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg flex items-center justify-center">
                   <div className="text-center p-4">
@@ -114,7 +114,7 @@ export default function ListingsPage() {
 
                 <div className="mt-6">
                   <a 
-                    href={`/listings/${listing.id}`}
+                    href={`/listings/${listing._id}`}
                     className="block w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-center"
                   >
                     詳細を見る
