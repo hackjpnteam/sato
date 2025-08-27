@@ -485,89 +485,167 @@ export default function HomePage() {
         </Card>
       )}
 
-      {/* 出品作成フォーム */}
+      {/* 出品手順ガイド */}
       {showListingForm && user && (
-        <Card className="max-w-2xl mx-auto mb-8">
-          <CardHeader>
-            <CardTitle>新規出品作成</CardTitle>
-            <CardDescription>
-              半導体部品の出品情報を入力してください
-            </CardDescription>
-          </CardHeader>
+        <>
+          {/* Step-by-step Guide */}
+          <Card className="max-w-4xl mx-auto mb-6">
+            <CardHeader>
+              <CardTitle className="text-center text-2xl">📝 出品手順ガイド</CardTitle>
+              <CardDescription className="text-center">
+                以下の手順に従って、簡単に出品できます
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Step 1 */}
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-2xl font-bold text-blue-600">1</span>
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">基本情報入力</h3>
+                  <p className="text-sm text-gray-600">
+                    部品番号、メーカー名、数量、価格などの基本情報を入力します
+                  </p>
+                </div>
+
+                {/* Step 2 */}
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-2xl font-bold text-green-600">2</span>
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">詳細情報追加</h3>
+                  <p className="text-sm text-gray-600">
+                    デートコード、保証情報、入手経路、状態などの詳細を入力します
+                  </p>
+                </div>
+
+                {/* Step 3 */}
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-2xl font-bold text-purple-600">3</span>
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">出品完了</h3>
+                  <p className="text-sm text-gray-600">
+                    入力内容を確認して出品ボタンを押すと、すぐに公開されます
+                  </p>
+                </div>
+              </div>
+
+              {/* Important Notes */}
+              <div className="mt-8 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <h4 className="font-semibold text-yellow-800 mb-2">📋 出品前の確認事項</h4>
+                <ul className="text-sm text-yellow-700 space-y-1">
+                  <li>• 部品番号は正確に入力してください（検索性向上のため）</li>
+                  <li>• 価格は単価（1個あたり）で入力してください</li>
+                  <li>• デートコードがある場合は必ず入力してください</li>
+                  <li>• 在庫数量は正確な数量を入力してください</li>
+                </ul>
+              </div>
+
+              {/* Benefits */}
+              <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <h4 className="font-semibold text-green-800 mb-2">💡 出品のメリット</h4>
+                <ul className="text-sm text-green-700 space-y-1">
+                  <li>• 全国の企業に向けて販売機会を拡大</li>
+                  <li>• 適正価格での販売をサポート</li>
+                  <li>• 在庫の有効活用で収益向上</li>
+                  <li>• 安全な取引システムで安心</li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* 出品作成フォーム */}
+          <Card className="max-w-2xl mx-auto mb-8">
+            <CardHeader>
+              <CardTitle>新規出品作成</CardTitle>
+              <CardDescription>
+                半導体部品の出品情報を入力してください
+              </CardDescription>
+            </CardHeader>
           <CardContent>
             <form onSubmit={handleCreateListing} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="partNumber">部品番号 *</Label>
+                  <Label htmlFor="partNumber">部品番号 * <span className="text-xs text-gray-500">（型番・品番）</span></Label>
                   <Input
                     id="partNumber"
                     value={listingData.partNumber}
                     onChange={(e: any) => setListingData({...listingData, partNumber: e.target.value})}
-                    placeholder="ESP32-WROOM-32"
+                    placeholder="例: ESP32-WROOM-32, STM32F407VET6"
                     required
                   />
+                  <p className="text-xs text-gray-500 mt-1">正確な部品番号を入力すると検索されやすくなります</p>
                 </div>
                 <div>
-                  <Label htmlFor="manufacturer">メーカー名 *</Label>
+                  <Label htmlFor="manufacturer">メーカー名 * <span className="text-xs text-gray-500">（製造元）</span></Label>
                   <Input
                     id="manufacturer"
                     value={listingData.manufacturer}
                     onChange={(e: any) => setListingData({...listingData, manufacturer: e.target.value})}
-                    placeholder="Espressif Systems"
+                    placeholder="例: Espressif Systems, STMicroelectronics"
                     required
                   />
+                  <p className="text-xs text-gray-500 mt-1">正式なメーカー名を入力してください</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="quantity">数量 *</Label>
+                  <Label htmlFor="quantity">数量 * <span className="text-xs text-gray-500">（在庫個数）</span></Label>
                   <Input
                     id="quantity"
                     type="number"
                     min="0"
                     value={listingData.quantity}
                     onChange={(e: any) => setListingData({...listingData, quantity: e.target.value})}
+                    placeholder="例: 100"
                     required
                   />
+                  <p className="text-xs text-gray-500 mt-1">実際に販売可能な数量を入力</p>
                 </div>
                 <div>
-                  <Label htmlFor="unitPriceJPY">単価（円）*</Label>
+                  <Label htmlFor="unitPriceJPY">単価（円）* <span className="text-xs text-gray-500">（1個あたり）</span></Label>
                   <Input
                     id="unitPriceJPY"
                     type="number"
                     min="0"
                     value={listingData.unitPriceJPY}
                     onChange={(e: any) => setListingData({...listingData, unitPriceJPY: e.target.value})}
+                    placeholder="例: 450"
                     required
                   />
+                  <p className="text-xs text-gray-500 mt-1">1個あたりの販売価格（税込）</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="dateCode">デートコード</Label>
+                  <Label htmlFor="dateCode">デートコード <span className="text-xs text-gray-500">（製造週・年）</span></Label>
                   <Input
                     id="dateCode"
                     value={listingData.dateCode}
                     onChange={(e: any) => setListingData({...listingData, dateCode: e.target.value})}
-                    placeholder="2024W12"
+                    placeholder="例: 2024W15, 2410"
                   />
+                  <p className="text-xs text-gray-500 mt-1">パッケージに印字された製造日情報</p>
                 </div>
                 <div>
-                  <Label htmlFor="warranty">保証情報</Label>
+                  <Label htmlFor="warranty">保証情報 <span className="text-xs text-gray-500">（保証期間・条件）</span></Label>
                   <Input
                     id="warranty"
                     value={listingData.warranty}
                     onChange={(e: any) => setListingData({...listingData, warranty: e.target.value})}
-                    placeholder="メーカー保証1年"
+                    placeholder="例: メーカー保証1年, 初期不良対応"
                   />
+                  <p className="text-xs text-gray-500 mt-1">提供できる保証内容を記載</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="stockSource">入手経路</Label>
+                  <Label htmlFor="stockSource">入手経路 <span className="text-xs text-gray-500">（仕入れ元）</span></Label>
                   <Select 
                     value={listingData.stockSource} 
                     onValueChange={(value: 'authorized' | 'open_market') => 
@@ -577,9 +655,10 @@ export default function HomePage() {
                     <SelectItem value="authorized">正規代理店</SelectItem>
                     <SelectItem value="open_market">二次市場</SelectItem>
                   </Select>
+                  <p className="text-xs text-gray-500 mt-1">部品をどこから入手したかを選択</p>
                 </div>
                 <div>
-                  <Label htmlFor="condition">状態</Label>
+                  <Label htmlFor="condition">状態 <span className="text-xs text-gray-500">（使用状況）</span></Label>
                   <Select 
                     value={listingData.condition} 
                     onValueChange={(value: 'new' | 'used') => 
@@ -589,6 +668,7 @@ export default function HomePage() {
                     <SelectItem value="new">新品</SelectItem>
                     <SelectItem value="used">中古</SelectItem>
                   </Select>
+                  <p className="text-xs text-gray-500 mt-1">部品の使用状況を選択</p>
                 </div>
               </div>
 
