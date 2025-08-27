@@ -31,7 +31,7 @@ function createTransporter() {
     throw new Error('SMTP認証情報が設定されていません。SMTP_USERとSMTP_PASSを環境変数に設定してください。')
   }
 
-  return nodemailer.createTransporter(config)
+  return nodemailer.createTransport(config)
 }
 
 interface SendEmailOptions {
