@@ -150,6 +150,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Connect to database
+    const { db } = await connectToDatabase()
+
     // Get user information
     const user = await db.collection('users').findOne(
       { _id: new ObjectId(decoded.userId) },

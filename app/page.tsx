@@ -311,7 +311,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* 買う */}
             <div className="bg-white rounded-2xl p-6 border-2 border-green-200 hover:border-green-400 transition-colors">
-              <div className="text-5xl mb-4">🛒</div>
+              <div className="text-5xl mb-4">🖥️</div>
               <h2 className="text-xl font-bold text-green-700 mb-2">部品を購入する</h2>
               <p className="text-gray-600 mb-4 text-sm">
                 必要な半導体部品を検索・比較して購入
@@ -326,7 +326,7 @@ export default function HomePage() {
 
             {/* 売る */}
             <div className="bg-white rounded-2xl p-6 border-2 border-blue-200 hover:border-blue-400 transition-colors">
-              <div className="text-5xl mb-4">💰</div>
+              <div className="text-5xl mb-4">💹</div>
               <h2 className="text-xl font-bold text-blue-700 mb-2">部品を販売する</h2>
               <p className="text-gray-600 mb-4 text-sm">
                 在庫部品を出品して全国の企業に販売
@@ -359,18 +359,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* ログイン/ログアウトボタン */}
-        {user && (
-          <div className="flex justify-center">
-            <Button 
-              onClick={handleLogout}
-              variant="outline"
-              className="text-sm"
-            >
-              ログアウト
-            </Button>
-          </div>
-        )}
 
         {!user && (
           <div className="flex justify-center">
@@ -487,83 +475,116 @@ export default function HomePage() {
 
       {/* 出品手順ガイド */}
       {showListingForm && user && (
-        <>
-          {/* Step-by-step Guide */}
-          <Card className="max-w-4xl mx-auto mb-6">
-            <CardHeader>
-              <CardTitle className="text-center text-2xl">📝 出品手順ガイド</CardTitle>
-              <CardDescription className="text-center">
-                以下の手順に従って、簡単に出品できます
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Step 1 */}
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-2xl font-bold text-blue-600">1</span>
+        <Card className="max-w-4xl mx-auto mb-6">
+          <CardHeader>
+            <CardTitle className="text-center text-2xl">📝 出品手順ガイド</CardTitle>
+            <CardDescription className="text-center">
+              以下の手順に従って、簡単に出品できます
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="relative">
+              {/* Progress Line */}
+              <div className="hidden md:block absolute top-12 left-1/2 transform -translate-x-1/2 w-2/3 h-1 bg-gradient-to-r from-blue-200 via-green-200 to-purple-200 rounded-full"></div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+                <div className="text-center group">
+                  <div className="relative mb-4">
+                    <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto transform group-hover:scale-105 transition-transform shadow-lg">
+                      <div className="text-white">
+                        <div className="text-3xl mb-1">🔧</div>
+                        <div className="text-sm font-bold">STEP 1</div>
+                      </div>
+                    </div>
+                    <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-blue-500 rounded-full shadow-lg"></div>
                   </div>
-                  <h3 className="text-lg font-semibold mb-2">基本情報入力</h3>
-                  <p className="text-sm text-gray-600">
-                    部品番号、メーカー名、数量、価格などの基本情報を入力します
-                  </p>
+                  <h3 className="text-xl font-bold mb-3 text-gray-800">基本情報入力</h3>
+                  <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
+                    <p className="text-sm text-blue-800 leading-relaxed">
+                      部品番号、メーカー名、数量、価格などの<br />
+                      <span className="font-semibold">基本情報を入力</span>します
+                    </p>
+                  </div>
                 </div>
-
-                {/* Step 2 */}
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-2xl font-bold text-green-600">2</span>
+                
+                <div className="text-center group">
+                  <div className="relative mb-4">
+                    <div className="w-24 h-24 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto transform group-hover:scale-105 transition-transform shadow-lg">
+                      <div className="text-white">
+                        <div className="text-3xl mb-1">📝</div>
+                        <div className="text-sm font-bold">STEP 2</div>
+                      </div>
+                    </div>
+                    <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-green-500 rounded-full shadow-lg"></div>
                   </div>
-                  <h3 className="text-lg font-semibold mb-2">詳細情報追加</h3>
-                  <p className="text-sm text-gray-600">
-                    デートコード、保証情報、入手経路、状態などの詳細を入力します
-                  </p>
+                  <h3 className="text-xl font-bold mb-3 text-gray-800">詳細情報追加</h3>
+                  <div className="bg-green-50 rounded-xl p-4 border border-green-100">
+                    <p className="text-sm text-green-800 leading-relaxed">
+                      デートコード、保証情報、入手経路、<br />
+                      <span className="font-semibold">状態などの詳細</span>を入力します
+                    </p>
+                  </div>
                 </div>
-
-                {/* Step 3 */}
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-2xl font-bold text-purple-600">3</span>
+                
+                <div className="text-center group">
+                  <div className="relative mb-4">
+                    <div className="w-24 h-24 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto transform group-hover:scale-105 transition-transform shadow-lg">
+                      <div className="text-white">
+                        <div className="text-3xl mb-1">🚀</div>
+                        <div className="text-sm font-bold">STEP 3</div>
+                      </div>
+                    </div>
+                    <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-purple-500 rounded-full shadow-lg"></div>
                   </div>
-                  <h3 className="text-lg font-semibold mb-2">出品完了</h3>
-                  <p className="text-sm text-gray-600">
-                    入力内容を確認して出品ボタンを押すと、すぐに公開されます
-                  </p>
+                  <h3 className="text-xl font-bold mb-3 text-gray-800">出品完了</h3>
+                  <div className="bg-purple-50 rounded-xl p-4 border border-purple-100">
+                    <p className="text-sm text-purple-800 leading-relaxed">
+                      入力内容を確認して出品ボタンを押すと、<br />
+                      <span className="font-semibold">すぐに公開</span>されます
+                    </p>
+                  </div>
                 </div>
               </div>
-
-              {/* Important Notes */}
-              <div className="mt-8 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <h4 className="font-semibold text-yellow-800 mb-2">📋 出品前の確認事項</h4>
-                <ul className="text-sm text-yellow-700 space-y-1">
-                  <li>• 部品番号は正確に入力してください（検索性向上のため）</li>
-                  <li>• 価格は単価（1個あたり）で入力してください</li>
-                  <li>• デートコードがある場合は必ず入力してください</li>
-                  <li>• 在庫数量は正確な数量を入力してください</li>
-                </ul>
+              
+              {/* Call to Action */}
+              <div className="mt-8 pt-6 border-t border-gray-100">
+                <div className="text-center">
+                  <p className="text-gray-600 text-sm mb-4">
+                    <span className="inline-flex items-center">
+                      <span className="mr-2">⏱️</span>
+                      たった3分で出品完了！
+                    </span>
+                  </p>
+                  <div className="inline-flex items-center space-x-4 text-xs text-gray-500">
+                    <span className="flex items-center">
+                      <span className="mr-1">✅</span>
+                      無料で出品
+                    </span>
+                    <span className="flex items-center">
+                      <span className="mr-1">⚡</span>
+                      即座に公開
+                    </span>
+                    <span className="flex items-center">
+                      <span className="mr-1">🔒</span>
+                      安全取引
+                    </span>
+                  </div>
+                </div>
               </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
-              {/* Benefits */}
-              <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-                <h4 className="font-semibold text-green-800 mb-2">💡 出品のメリット</h4>
-                <ul className="text-sm text-green-700 space-y-1">
-                  <li>• 全国の企業に向けて販売機会を拡大</li>
-                  <li>• 適正価格での販売をサポート</li>
-                  <li>• 在庫の有効活用で収益向上</li>
-                  <li>• 安全な取引システムで安心</li>
-                </ul>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* 出品作成フォーム */}
-          <Card className="max-w-2xl mx-auto mb-8">
-            <CardHeader>
-              <CardTitle>新規出品作成</CardTitle>
-              <CardDescription>
-                半導体部品の出品情報を入力してください
-              </CardDescription>
-            </CardHeader>
+      {/* 出品作成フォーム */}
+      {showListingForm && user && (
+        <Card className="max-w-2xl mx-auto mb-8">
+          <CardHeader>
+            <CardTitle>新規出品作成</CardTitle>
+            <CardDescription>
+              半導体部品の出品情報を入力してください
+            </CardDescription>
+          </CardHeader>
           <CardContent>
             <form onSubmit={handleCreateListing} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -593,59 +614,53 @@ export default function HomePage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="quantity">数量 * <span className="text-xs text-gray-500">（在庫個数）</span></Label>
+                  <Label htmlFor="quantity">数量 *</Label>
                   <Input
                     id="quantity"
                     type="number"
                     min="0"
                     value={listingData.quantity}
                     onChange={(e: any) => setListingData({...listingData, quantity: e.target.value})}
-                    placeholder="例: 100"
                     required
                   />
-                  <p className="text-xs text-gray-500 mt-1">実際に販売可能な数量を入力</p>
                 </div>
                 <div>
-                  <Label htmlFor="unitPriceJPY">単価（円）* <span className="text-xs text-gray-500">（1個あたり）</span></Label>
+                  <Label htmlFor="unitPriceJPY">単価（円）*</Label>
                   <Input
                     id="unitPriceJPY"
                     type="number"
                     min="0"
                     value={listingData.unitPriceJPY}
                     onChange={(e: any) => setListingData({...listingData, unitPriceJPY: e.target.value})}
-                    placeholder="例: 450"
                     required
                   />
-                  <p className="text-xs text-gray-500 mt-1">1個あたりの販売価格（税込）</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="dateCode">デートコード <span className="text-xs text-gray-500">（製造週・年）</span></Label>
+                  <Label htmlFor="dateCode">デートコード</Label>
                   <Input
                     id="dateCode"
                     value={listingData.dateCode}
                     onChange={(e: any) => setListingData({...listingData, dateCode: e.target.value})}
-                    placeholder="例: 2024W15, 2410"
+                    placeholder="2024W12"
                   />
-                  <p className="text-xs text-gray-500 mt-1">パッケージに印字された製造日情報</p>
                 </div>
                 <div>
-                  <Label htmlFor="warranty">保証情報 <span className="text-xs text-gray-500">（保証期間・条件）</span></Label>
+                  <Label htmlFor="warranty">保証情報</Label>
                   <Input
                     id="warranty"
                     value={listingData.warranty}
                     onChange={(e: any) => setListingData({...listingData, warranty: e.target.value})}
-                    placeholder="例: メーカー保証1年, 初期不良対応"
+                    placeholder="メーカー保証1年"
                   />
-                  <p className="text-xs text-gray-500 mt-1">提供できる保証内容を記載</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="stockSource">入手経路 <span className="text-xs text-gray-500">（仕入れ元）</span></Label>
+                  <Label htmlFor="stockSource">入手経路</Label>
                   <Select 
                     value={listingData.stockSource} 
                     onValueChange={(value: 'authorized' | 'open_market') => 
@@ -655,10 +670,9 @@ export default function HomePage() {
                     <SelectItem value="authorized">正規代理店</SelectItem>
                     <SelectItem value="open_market">二次市場</SelectItem>
                   </Select>
-                  <p className="text-xs text-gray-500 mt-1">部品をどこから入手したかを選択</p>
                 </div>
                 <div>
-                  <Label htmlFor="condition">状態 <span className="text-xs text-gray-500">（使用状況）</span></Label>
+                  <Label htmlFor="condition">状態</Label>
                   <Select 
                     value={listingData.condition} 
                     onValueChange={(value: 'new' | 'used') => 
@@ -668,13 +682,11 @@ export default function HomePage() {
                     <SelectItem value="new">新品</SelectItem>
                     <SelectItem value="used">中古</SelectItem>
                   </Select>
-                  <p className="text-xs text-gray-500 mt-1">部品の使用状況を選択</p>
                 </div>
               </div>
 
               <div className="flex space-x-2 pt-4">
-                <Button type="submit" className="flex-1">
-                  <Package className="mr-2" />
+                <Button type="submit" className="flex-1 justify-center">
                   出品を作成
                 </Button>
                 <Button 
