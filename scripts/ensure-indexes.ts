@@ -6,6 +6,9 @@ async function ensureIndexes() {
   
   try {
     const client = await clientPromise
+    if (!client) {
+      throw new Error('MongoDB client is not available')
+    }
     const db = client.db('semiconductor-marketplace')
     
     // Users コレクションのインデックス
