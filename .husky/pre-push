@@ -1,0 +1,28 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "🔍 Running pre-push checks..."
+
+# Lint check
+echo "📋 Running ESLint..."
+npm run lint || { echo "❌ Lint failed"; exit 1; }
+
+# Guard: request.cookies 禁止
+echo "🚫 Checking for forbidden request.cookies usage..."
+if grep -R "request\.cookies" -n app src pages 2>/dev/null; then
+  echo "❌ ERROR: request.cookies found. Use cookies() from next/headers instead"
+  exit 1
+fi
+
+# Guard: req.cookies.get 検出
+echo "🚫 Checking for forbidden req.cookies.get usage..."
+if grep -R "\.cookies\.get(" -n app src pages 2>/dev/null | grep -v 'from "next/headers"'; then
+  echo "❌ ERROR: req.cookies.get usage found. Use cookies() from next/headers instead"
+  exit 1
+fi
+
+# Build check
+echo "🏗️ Running build check..."
+npm run build || { echo "❌ Build failed"; exit 1; }
+
+echo "✅ All pre-push checks passed!"

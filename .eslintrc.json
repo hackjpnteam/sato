@@ -13,6 +13,25 @@
         "property": "cookies",
         "message": "Use cookies() from next/headers instead of request.cookies"
       }
+    ],
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "Program > ExpressionStatement > CallExpression[callee.name='cookies']",
+        "message": "Do not call cookies() at module top-level. Call it inside functions only."
+      },
+      {
+        "selector": "Program > ExpressionStatement > CallExpression[callee.name='headers']",
+        "message": "Do not call headers() at module top-level. Call it inside functions only."
+      },
+      {
+        "selector": "Program > VariableDeclaration > VariableDeclarator > CallExpression[callee.name='cookies']",
+        "message": "Do not call cookies() at module top-level. Call it inside functions only."
+      },
+      {
+        "selector": "Program > VariableDeclaration > VariableDeclarator > CallExpression[callee.name='headers']",
+        "message": "Do not call headers() at module top-level. Call it inside functions only."
+      }
     ]
   }
 }
