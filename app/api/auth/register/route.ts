@@ -1,91 +1,62 @@
-// ユーザー登録API
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
-import clientPromise from '@/lib/mongodb'
-import { RegisterSchema } from '@/lib/validate'
-import { createInternalErrorResponse } from '@/lib/guard'
+import { connectToDatabase } from '@/lib/mongodb'
+import { z } from 'zod'
 
-export async function POST(request: NextRequest) {
-  const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-  
+const registerSchema = z.object({
+  email: z.string().email('有効なメールアドレスを入力してください'),
+  password: z.string().min(8, 'パスワードは8文字以上である必要があります'),
+  name: z.string().optional()
+})
+
+export async function POST(request: Request) {
   try {
     const body = await request.json()
     
-    // リクエストボディのバリデーション
-    const validationResult = RegisterSchema.safeParse(body)
+    const validationResult = registerSchema.safeParse(body)
     if (!validationResult.success) {
       return NextResponse.json(
-        { 
-          error: 'バリデーションエラー',
-          code: 'VALIDATION_ERROR',
-          details: validationResult.error.issues 
-        },
+        { error: validationResult.error.issues[0].message },
         { status: 400 }
       )
     }
-    
+
     const { email, password, name } = validationResult.data
-    
-    // メールアドレスの正規化（小文字化）
-    const normalizedEmail = email.toLowerCase()
-    
-    // MongoDB接続
-    const client = await clientPromise
-    const db = client.db('semiconductor-marketplace')
-    const users = db.collection('users')
-    
-    // メールアドレス重複チェック
-    const existingUser = await users.findOne({ email: normalizedEmail })
+    const { db } = await connectToDatabase()
+
+    // Check if user already exists
+    const existingUser = await db.collection('users').findOne({ email })
+
     if (existingUser) {
       return NextResponse.json(
-        { 
-          error: 'このメールアドレスは既に登録されています',
-          code: 'EMAIL_EXISTS' 
-        },
-        { status: 409 }
+        { error: 'このメールアドレスは既に登録されています' },
+        { status: 400 }
       )
     }
-    
-    // パスワードハッシュ化
-    const saltRounds = 12
-    const passwordHash = await bcrypt.hash(password, saltRounds)
-    
-    // ユーザー作成
-    const now = new Date()
-    const newUser = {
-      email: normalizedEmail,
-      passwordHash,
-      name: name || null,
-      role: 'buyer', // デフォルトロール
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 12)
+
+    // Create user
+    const result = await db.collection('users').insertOne({
+      email,
+      passwordHash: hashedPassword,
+      name: name || '',
+      role: 'buyer',
       emailVerified: false,
-      createdAt: now,
-      updatedAt: now,
-    }
-    
-    const result = await users.insertOne(newUser)
-    
-    if (!result.insertedId) {
-      console.error('User creation failed:', { requestId, email: normalizedEmail })
-      return createInternalErrorResponse(requestId)
-    }
-    
-    console.log('User created successfully:', { 
-      requestId, 
-      userId: result.insertedId.toString(),
-      email: normalizedEmail 
+      createdAt: new Date(),
+      updatedAt: new Date()
     })
-    
-    return NextResponse.json(
-      { 
-        ok: true,
-        message: 'ユーザー登録が完了しました',
-        userId: result.insertedId.toString()
-      },
-      { status: 201 }
-    )
-    
+
+    return NextResponse.json({
+      message: '登録が完了しました',
+      userId: result.insertedId
+    })
   } catch (error) {
-    console.error('Registration error:', error, { requestId })
-    return createInternalErrorResponse(requestId)
+    console.error('Register error:', error)
+    return NextResponse.json(
+      { error: 'サーバーエラーが発生しました' },
+      { status: 500 }
+    )
   }
 }

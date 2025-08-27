@@ -1,55 +1,62 @@
-// 現在のユーザー情報取得API
-import { NextResponse } from 'next/server'
-import { getCurrentUser } from '@/lib/auth'
-import clientPromise from '@/lib/mongodb'
+import { NextRequest, NextResponse } from 'next/server'
+import { connectToDatabase } from '@/lib/mongodb'
 import { ObjectId } from 'mongodb'
+import jwt from 'jsonwebtoken'
 
-export async function GET() {
+const JWT_SECRET = process.env.JWT_SECRET || 'default-secret-key-for-development'
+
+interface JwtPayload {
+  userId: string
+  email: string
+  role: string
+  iat?: number
+  exp?: number
+}
+
+function verifyToken(token: string): JwtPayload | null {
   try {
-    const user = getCurrentUser()
-    
-    if (!user) {
-      return NextResponse.json({
-        user: null
-      })
+    const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload
+    return decoded
+  } catch (error) {
+    return null
+  }
+}
+
+export async function GET(request: NextRequest) {
+  try {
+    const token = request.cookies.get('token')?.value
+
+    if (!token) {
+      return NextResponse.json({ user: null }, { status: 200 })
     }
+
+    const decoded = verifyToken(token)
+    if (!decoded || !decoded.userId) {
+      return NextResponse.json({ user: null }, { status: 200 })
+    }
+
+    const { db } = await connectToDatabase()
     
-    // MongoDB接続して最新のユーザー情報を取得
-    const client = await clientPromise
-    const db = client.db('semiconductor-marketplace')
-    const users = db.collection('users')
-    
-    const userData = await users.findOne(
-      { _id: new ObjectId(user.uid) },
-      { 
-        projection: { 
-          passwordHash: 0 // パスワードハッシュは除外
-        } 
-      }
+    const user = await db.collection('users').findOne(
+      { _id: new ObjectId(decoded.userId) },
+      { projection: { passwordHash: 0 } }
     )
-    
-    if (!userData) {
-      return NextResponse.json({
-        user: null
-      })
+
+    if (!user) {
+      return NextResponse.json({ user: null }, { status: 200 })
     }
-    
+
     return NextResponse.json({
       user: {
-        id: userData._id.toString(),
-        email: userData.email,
-        name: userData.name,
-        role: userData.role,
-        emailVerified: userData.emailVerified,
-        createdAt: userData.createdAt,
-        lastLoginAt: userData.lastLoginAt
+        id: user._id.toString(),
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        emailVerified: user.emailVerified
       }
     })
-    
-  } catch (error: unknown) {
-    console.error('Get current user error:', error)
-    return NextResponse.json({
-      user: null
-    })
+  } catch (error) {
+    console.error('Get user error:', error)
+    return NextResponse.json({ user: null }, { status: 200 })
   }
 }

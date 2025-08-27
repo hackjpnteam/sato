@@ -1,35 +1,19 @@
-// ログアウトAPI
 import { NextResponse } from 'next/server'
-import { clearAuthCookie, getCurrentUser } from '@/lib/auth'
 
 export async function POST() {
   try {
-    const user = getCurrentUser()
-    
-    // 認証Cookieをクリア
-    clearAuthCookie()
-    
-    if (user) {
-      console.log('User logged out:', { 
-        userId: user.uid,
-        email: user.email 
-      })
-    }
-    
-    return NextResponse.json({
-      ok: true,
+    const response = NextResponse.json({
       message: 'ログアウトしました'
     })
-    
-  } catch (error: unknown) {
+
+    response.cookies.delete('token')
+
+    return response
+  } catch (error) {
     console.error('Logout error:', error)
-    
-    // エラーが発生してもCookieはクリアする
-    clearAuthCookie()
-    
-    return NextResponse.json({
-      ok: true,
-      message: 'ログアウトしました'
-    })
+    return NextResponse.json(
+      { error: 'サーバーエラーが発生しました' },
+      { status: 500 }
+    )
   }
 }

@@ -1,97 +1,64 @@
-// ログインAPI
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
-import clientPromise from '@/lib/mongodb'
-import { LoginSchema } from '@/lib/validate'
-import { signJwt, setAuthCookie } from '@/lib/auth'
-import { createInternalErrorResponse } from '@/lib/guard'
+import { connectToDatabase } from '@/lib/mongodb'
+import { z } from 'zod'
+import jwt from 'jsonwebtoken'
 
-export async function POST(request: NextRequest) {
-  const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-  
+const JWT_SECRET = process.env.JWT_SECRET || 'default-secret-key-for-development'
+
+function generateToken(payload: { userId: string; email: string; role: string }): string {
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: '7d' })
+}
+
+const loginSchema = z.object({
+  email: z.string().email('有効なメールアドレスを入力してください'),
+  password: z.string().min(1, 'パスワードを入力してください')
+})
+
+export async function POST(request: Request) {
   try {
     const body = await request.json()
     
-    // リクエストボディのバリデーション
-    const validationResult = LoginSchema.safeParse(body)
+    const validationResult = loginSchema.safeParse(body)
     if (!validationResult.success) {
       return NextResponse.json(
-        { 
-          error: 'バリデーションエラー',
-          code: 'VALIDATION_ERROR',
-          details: validationResult.error.issues 
-        },
+        { error: validationResult.error.issues[0].message },
         { status: 400 }
       )
     }
-    
+
     const { email, password } = validationResult.data
-    
-    // メールアドレスの正規化（小文字化）
-    const normalizedEmail = email.toLowerCase()
-    
-    // MongoDB接続
-    const client = await clientPromise
-    const db = client.db('semiconductor-marketplace')
-    const users = db.collection('users')
-    
-    // ユーザー検索
-    const user = await users.findOne({ email: normalizedEmail })
+    const { db } = await connectToDatabase()
+
+    // Find user
+    const user = await db.collection('users').findOne({ email })
+
     if (!user) {
       return NextResponse.json(
-        { 
-          error: 'メールアドレスまたはパスワードが正しくありません',
-          code: 'INVALID_CREDENTIALS' 
-        },
+        { error: 'メールアドレスまたはパスワードが正しくありません' },
         { status: 401 }
       )
     }
-    
-    // パスワード検証
+
+    // Verify password
     const isValidPassword = await bcrypt.compare(password, user.passwordHash)
+
     if (!isValidPassword) {
-      console.warn('Invalid password attempt:', { 
-        requestId, 
-        email: normalizedEmail,
-        userId: user._id.toString()
-      })
-      
       return NextResponse.json(
-        { 
-          error: 'メールアドレスまたはパスワードが正しくありません',
-          code: 'INVALID_CREDENTIALS' 
-        },
+        { error: 'メールアドレスまたはパスワードが正しくありません' },
         { status: 401 }
       )
     }
-    
-    // JWTトークン生成
-    const jwtPayload = {
-      uid: user._id.toString(),
-      email: user.email,
-      role: user.role,
-    }
-    
-    const token = signJwt(jwtPayload, '7d')
-    
-    // HttpOnly Cookieに保存
-    setAuthCookie(token)
-    
-    // 最終ログイン時刻を更新
-    await users.updateOne(
-      { _id: user._id },
-      { $set: { lastLoginAt: new Date(), updatedAt: new Date() } }
-    )
-    
-    console.log('User logged in successfully:', { 
-      requestId, 
+
+    // Generate JWT token
+    const token = generateToken({ 
       userId: user._id.toString(),
-      email: normalizedEmail,
-      role: user.role
+      email: user.email,
+      role: user.role 
     })
-    
-    return NextResponse.json({
-      ok: true,
+
+    // Create response with HttpOnly cookie
+    const response = NextResponse.json({
       message: 'ログインしました',
       user: {
         id: user._id.toString(),
@@ -101,9 +68,20 @@ export async function POST(request: NextRequest) {
         emailVerified: user.emailVerified
       }
     })
-    
+
+    response.cookies.set('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7 // 7 days
+    })
+
+    return response
   } catch (error) {
-    console.error('Login error:', error, { requestId })
-    return createInternalErrorResponse(requestId)
+    console.error('Login error:', error)
+    return NextResponse.json(
+      { error: 'サーバーエラーが発生しました' },
+      { status: 500 }
+    )
   }
 }

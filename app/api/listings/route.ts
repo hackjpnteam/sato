@@ -1,161 +1,141 @@
-// 出品一覧・作成API
 import { NextRequest, NextResponse } from 'next/server'
-import clientPromise from '@/lib/mongodb'
-import { ListingSchema } from '@/lib/validate'
-import { requireSeller, createInternalErrorResponse } from '@/lib/guard'
-import { ObjectId } from 'mongodb'
+import { connectToDatabase } from '@/lib/mongodb'
+import { z } from 'zod'
 
-// 出品一覧取得
+// GET /api/listings - 出品一覧・検索
 export async function GET(request: NextRequest) {
-  const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-  
   try {
+    const { db } = await connectToDatabase()
     const { searchParams } = new URL(request.url)
-    const q = searchParams.get('q') // 部品番号検索
-    const maker = searchParams.get('maker') // メーカー検索
-    const status = searchParams.get('status') || 'active' // ステータス
-    const limit = Number(searchParams.get('limit')) || 50
-    const offset = Number(searchParams.get('offset')) || 0
     
-    // MongoDB接続
-    const client = await clientPromise
-    const db = client.db('semiconductor-marketplace')
-    const listings = db.collection('listings')
+    // Search parameters
+    const q = searchParams.get('q')
+    const manufacturer = searchParams.get('manufacturer')
+    const category = searchParams.get('category')
+    const priceMin = searchParams.get('priceMin')
+    const priceMax = searchParams.get('priceMax')
+    const stockStatus = searchParams.get('stockStatus')
     
-    // クエリ構築
-    const query: Record<string, unknown> = { status }
+    // Build query
+    const query: any = {}
     
+    // Text search (part number or manufacturer)
     if (q) {
-      // 部品番号の前方一致検索（大小文字無視）
-      query.partNumber = { $regex: `^${q}`, $options: 'i' }
+      query.$or = [
+        { partNumber: { $regex: q, $options: 'i' } },
+        { manufacturer: { $regex: q, $options: 'i' } }
+      ]
     }
     
-    if (maker) {
-      // メーカー名の部分一致検索
-      query.manufacturer = { $regex: maker, $options: 'i' }
+    // Manufacturer filter
+    if (manufacturer) {
+      query.manufacturer = { $regex: manufacturer, $options: 'i' }
     }
     
-    // 結果取得（作成日時降順）
-    const results = await listings
+    // Category filter
+    if (category) {
+      query.category = category
+    }
+    
+    // Price range filter
+    if (priceMin || priceMax) {
+      query.unitPriceJPY = {}
+      if (priceMin) query.unitPriceJPY.$gte = parseInt(priceMin)
+      if (priceMax) query.unitPriceJPY.$lte = parseInt(priceMax)
+    }
+    
+    // Stock status filter
+    if (stockStatus === 'in_stock') {
+      query.quantity = { $gt: 100 }
+    } else if (stockStatus === 'limited') {
+      query.quantity = { $gt: 0, $lte: 100 }
+    } else if (stockStatus === 'pre_order') {
+      query.quantity = 0
+    }
+    
+    // Execute query with pagination
+    const limit = parseInt(searchParams.get('limit') || '50')
+    const offset = parseInt(searchParams.get('offset') || '0')
+    
+    const listings = await db.collection('listings')
       .find(query)
       .sort({ createdAt: -1 })
-      .skip(offset)
       .limit(limit)
+      .skip(offset)
       .toArray()
     
-    // 総件数取得
-    const total = await listings.countDocuments(query)
-    
-    console.log('Listings fetched:', { 
-      requestId, 
-      query, 
-      count: results.length,
-      total 
-    })
+    const total = await db.collection('listings').countDocuments(query)
     
     return NextResponse.json({
-      listings: results.map(listing => ({
+      listings: listings.map(listing => ({
         ...listing,
-        id: listing._id.toString(),
-        _id: undefined
+        _id: listing._id.toString()
       })),
-      pagination: {
-        total,
-        limit,
-        offset,
-        hasMore: offset + results.length < total
-      }
+      total,
+      limit,
+      offset
     })
     
   } catch (error) {
-    console.error('Listings fetch error:', error, { requestId })
-    return createInternalErrorResponse(requestId)
+    console.error('Listings GET error:', error)
+    return NextResponse.json(
+      { error: 'サーバーエラーが発生しました' },
+      { status: 500 }
+    )
   }
 }
 
-// 出品作成
+// Validation schema for creating listings
+const createListingSchema = z.object({
+  partNumber: z.string().min(1, '部品番号は必須です'),
+  manufacturer: z.string().min(1, 'メーカー名は必須です'),
+  quantity: z.number().min(0, '数量は0以上である必要があります'),
+  unitPriceJPY: z.number().min(0, '価格は0以上である必要があります'),
+  dateCode: z.string().optional(),
+  stockSource: z.enum(['authorized', 'open_market']),
+  condition: z.enum(['new', 'used']),
+  warranty: z.string().optional(),
+  category: z.string().optional(),
+  images: z.array(z.string()).optional().default([])
+})
+
+// POST /api/listings - 新規出品作成
 export async function POST(request: NextRequest) {
-  const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-  
   try {
-    // 認証・認可チェック（セラー権限必須）
-    const authResult = requireSeller()
-    if (authResult instanceof NextResponse) {
-      return authResult
-    }
-    const { user } = authResult
-    
     const body = await request.json()
     
-    // バリデーション
-    const validationResult = ListingSchema.safeParse(body)
+    const validationResult = createListingSchema.safeParse(body)
     if (!validationResult.success) {
       return NextResponse.json(
-        { 
-          error: 'バリデーションエラー',
-          code: 'VALIDATION_ERROR',
-          details: validationResult.error.issues 
-        },
+        { error: validationResult.error.issues[0].message },
         { status: 400 }
       )
     }
+
+    // TODO: Get user from token
+    const sellerId = 'temp-seller-id' // This should come from JWT token
     
-    const data = validationResult.data
+    const { db } = await connectToDatabase()
     
-    // 数値の正規化
-    const normalizedData = {
-      ...data,
-      quantity: Number(data.quantity),
-      unitPriceJPY: Number(data.unitPriceJPY),
+    const listing = {
+      ...validationResult.data,
+      sellerId,
+      createdAt: new Date(),
+      updatedAt: new Date()
     }
     
-    // MongoDB接続
-    const client = await clientPromise
-    const db = client.db('semiconductor-marketplace')
-    const listings = db.collection('listings')
+    const result = await db.collection('listings').insertOne(listing)
     
-    // 出品作成
-    const now = new Date()
-    const newListing = {
-      ...normalizedData,
-      sellerId: new ObjectId(user.uid),
-      status: 'active',
-      createdAt: now,
-      updatedAt: now,
-    }
-    
-    const result = await listings.insertOne(newListing)
-    
-    if (!result.insertedId) {
-      console.error('Listing creation failed:', { requestId, userId: user.uid })
-      return createInternalErrorResponse(requestId)
-    }
-    
-    // 作成された出品を取得
-    const createdListing = await listings.findOne({ _id: result.insertedId })
-    
-    console.log('Listing created successfully:', { 
-      requestId, 
-      listingId: result.insertedId.toString(),
-      sellerId: user.uid,
-      partNumber: data.partNumber
-    })
-    
-    return NextResponse.json(
-      {
-        ok: true,
-        message: '出品を作成しました',
-        listing: {
-          ...createdListing,
-          id: createdListing!._id.toString(),
-          _id: undefined
-        }
-      },
-      { status: 201 }
-    )
+    return NextResponse.json({
+      message: '出品を作成しました',
+      listingId: result.insertedId.toString()
+    }, { status: 201 })
     
   } catch (error) {
-    console.error('Listing creation error:', error, { requestId })
-    return createInternalErrorResponse(requestId)
+    console.error('Listings POST error:', error)
+    return NextResponse.json(
+      { error: 'サーバーエラーが発生しました' },
+      { status: 500 }
+    )
   }
 }

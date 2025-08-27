@@ -10,7 +10,6 @@ const options = {
   maxPoolSize: 10, // 接続プールの最大サイズ
   serverSelectionTimeoutMS: 5000, // サーバー選択のタイムアウト
   socketTimeoutMS: 45000, // ソケットのタイムアウト
-  bufferMaxEntries: 0, // バッファリングを無効化
 }
 
 let client: MongoClient
@@ -35,3 +34,10 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 export default clientPromise
+
+// Database connection helper for API routes
+export async function connectToDatabase() {
+  const client = await clientPromise
+  const db = client.db('sato_marketplace')
+  return { client, db }
+}
