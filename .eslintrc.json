@@ -5,6 +5,14 @@
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-empty-object-type": "off",
     "@typescript-eslint/no-implicit-any": "off",
-    "no-var": "off"
+    "no-var": "off",
+    "no-restricted-properties": [
+      "error",
+      {
+        "object": "request",
+        "property": "cookies",
+        "message": "Use cookies() from next/headers instead of request.cookies"
+      }
+    ]
   }
 }
