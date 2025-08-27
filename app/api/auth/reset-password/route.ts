@@ -49,7 +49,25 @@ export async function POST(request: Request) {
     )
 
     // パスワードリセットメールを送信
-    const resetUrl = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/reset-password?token=${resetToken}`
+    // 本番環境のURLを動的に取得
+    let baseUrl = process.env.NEXTAUTH_URL
+    
+    if (!baseUrl) {
+      // Vercel環境変数を使用
+      if (process.env.VERCEL_URL) {
+        baseUrl = `https://${process.env.VERCEL_URL}`
+      } else if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+        baseUrl = `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      } else {
+        // リクエストのoriginを使用
+        const { origin } = new URL(request.url)
+        baseUrl = origin
+      }
+    }
+    
+    const resetUrl = `${baseUrl}/reset-password?token=${resetToken}`
+    
+    console.log(`パスワードリセットURL生成: ${resetUrl}`) // デバッグログ
     
     try {
       const emailResult = await sendPasswordResetEmail(email, resetUrl, user.name)
