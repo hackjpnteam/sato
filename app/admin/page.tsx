@@ -138,6 +138,7 @@ export default function AdminPage() {
   // Handle user role change
   const handleRoleChange = async (userId: string, newRole: string) => {
     try {
+      console.log('Updating user role:', { userId, newRole }) // Debug log
       const response = await fetch('/api/admin/users', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -147,11 +148,16 @@ export default function AdminPage() {
       if (response.ok) {
         // Update local state
         setUsers(prev => prev.map(u => 
-          u._id === userId ? { ...u, role: newRole } : u
+          u.id === userId ? { ...u, role: newRole } : u
         ))
+        alert('ユーザーロールを更新しました')
+      } else {
+        const error = await response.json()
+        alert(`エラー: ${error.error}`)
       }
     } catch (error) {
       console.error('Failed to update user role:', error)
+      alert('ロール更新に失敗しました')
     }
   }
 
@@ -254,7 +260,7 @@ export default function AdminPage() {
         <div className="mb-8">
           <div className="border-b border-gray-200">
             <nav className="flex space-x-8">
-              {['overview', 'users', 'listings', 'orders'].map((tab) => (
+              {['overview', ...(user.role === 'admin' ? ['users'] : []), 'listings', 'orders'].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
@@ -421,7 +427,7 @@ export default function AdminPage() {
                     </thead>
                     <tbody>
                       {users.map((user) => (
-                        <tr key={user._id} className="border-b border-gray-100">
+                        <tr key={user.id} className="border-b border-gray-100">
                           <td className="py-4 px-4">
                             <div>
                               <div className="font-medium text-gray-900">{user.name}</div>
@@ -447,7 +453,7 @@ export default function AdminPage() {
                           <td className="py-4 px-4">
                             <select
                               value={user.role}
-                              onChange={(e) => handleRoleChange(user._id, e.target.value)}
+                              onChange={(e) => handleRoleChange(user.id, e.target.value)}
                               className="text-sm border border-gray-300 rounded px-2 py-1"
                             >
                               <option value="buyer">購入者</option>
@@ -687,46 +693,6 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* Quick Actions */}
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">クイックアクション</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <button 
-              onClick={() => router.push('/admin/listings')}
-              className="flex items-center justify-center p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors"
-            >
-              <span className="text-2xl mr-3">📋</span>
-              <div className="text-left">
-                <div className="font-semibold text-gray-900">出品管理</div>
-                <div className="text-sm text-gray-600">出品の確認と編集</div>
-              </div>
-            </button>
-
-            <button 
-              onClick={() => router.push('/admin/orders')}
-              className="flex items-center justify-center p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors"
-            >
-              <span className="text-2xl mr-3">📊</span>
-              <div className="text-left">
-                <div className="font-semibold text-gray-900">注文管理</div>
-                <div className="text-sm text-gray-600">注文の処理と追跡</div>
-              </div>
-            </button>
-
-            {user.role === 'admin' && (
-              <button 
-                onClick={() => router.push('/admin/users')}
-                className="flex items-center justify-center p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors"
-              >
-                <span className="text-2xl mr-3">👤</span>
-                <div className="text-left">
-                  <div className="font-semibold text-gray-900">ユーザー管理</div>
-                  <div className="text-sm text-gray-600">ユーザーの管理と権限設定</div>
-                </div>
-              </button>
-            )}
-          </div>
-        </div>
 
         {/* Recent Activities */}
         <div className="bg-white rounded-xl shadow-sm p-6">

@@ -99,9 +99,19 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                パスワード
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                  パスワード
+                </label>
+                {isLogin && (
+                  <a 
+                    href="/forgot-password" 
+                    className="text-sm text-blue-600 hover:text-blue-800"
+                  >
+                    パスワードを忘れた場合
+                  </a>
+                )}
+              </div>
               <input
                 id="password"
                 type="password"
