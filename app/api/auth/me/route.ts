@@ -1,7 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
 import { connectToDatabase } from '@/lib/mongodb'
 import { ObjectId } from 'mongodb'
 import jwt from 'jsonwebtoken'
+
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+export const runtime = 'nodejs'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'default-secret-key-for-development'
 
@@ -22,9 +27,10 @@ function verifyToken(token: string): JwtPayload | null {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const token = request.cookies.get('token')?.value
+    const cookieStore = cookies()
+    const token = cookieStore.get('token')?.value
 
     if (!token) {
       return NextResponse.json({ user: null }, { status: 200 })
