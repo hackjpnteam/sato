@@ -1,9 +1,25 @@
 'use client'
 
 import { useCart } from '@/contexts/CartContext'
+import { useState, useEffect } from 'react'
 
 export default function Header() {
   const { totalQuantity } = useCart()
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  
+  useEffect(() => {
+    // Check if user is logged in
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/me')
+        const data = await response.json()
+        setIsLoggedIn(data.ok && data.user)
+      } catch {
+        setIsLoggedIn(false)
+      }
+    }
+    checkAuth()
+  }, [])
   
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
@@ -37,8 +53,8 @@ export default function Header() {
                   </span>
                 )}
               </a>
-              <a href="/account" className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm">
-                👨‍💼 アカウント
+              <a href={isLoggedIn ? '/account' : '/login'} className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm">
+                {isLoggedIn ? '👨‍💼 アカウント' : '🔑 ログイン'}
               </a>
             </div>
           </nav>
@@ -59,8 +75,8 @@ export default function Header() {
                 </span>
               )}
             </a>
-            <a href="/account" className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-              👨‍💼
+            <a href={isLoggedIn ? '/account' : '/login'} className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+              {isLoggedIn ? '👨‍💼' : '🔑'}
             </a>
           </div>
         </div>
