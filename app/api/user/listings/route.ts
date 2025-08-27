@@ -1,7 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
 import { connectToDatabase } from '@/lib/mongodb'
 import { ObjectId } from 'mongodb'
 import jwt from 'jsonwebtoken'
+
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+export const runtime = 'nodejs'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'default-secret-key-for-development'
 
@@ -23,9 +28,10 @@ function verifyToken(token: string): JwtPayload | null {
 }
 
 // GET: ユーザーの出品一覧を取得
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   try {
-    const token = request.cookies.get('token')?.value
+    const cookieStore = cookies()
+    const token = cookieStore.get('token')?.value
 
     if (!token) {
       return NextResponse.json(
@@ -79,9 +85,10 @@ export async function GET(request: NextRequest) {
 }
 
 // DELETE: 出品を削除
-export async function DELETE(request: NextRequest) {
+export async function DELETE(request: Request) {
   try {
-    const token = request.cookies.get('token')?.value
+    const cookieStore = cookies()
+    const token = cookieStore.get('token')?.value
 
     if (!token) {
       return NextResponse.json(

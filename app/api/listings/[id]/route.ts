@@ -1,8 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { connectToDatabase } from '@/lib/mongodb'
 import { ObjectId } from 'mongodb'
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+export const runtime = 'nodejs'
+
+export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
     const { db } = await connectToDatabase()
     

@@ -1,7 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
 import { connectToDatabase } from '@/lib/mongodb'
 import { ObjectId } from 'mongodb'
 import jwt from 'jsonwebtoken'
+
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+export const runtime = 'nodejs'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'default-secret-key-for-development'
 
@@ -23,9 +28,10 @@ function verifyToken(token: string): JwtPayload | null {
 }
 
 // GET: カート内容を取得
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const token = request.cookies.get('token')?.value
+    const cookieStore = cookies()
+    const token = cookieStore.get('token')?.value
 
     if (!token) {
       return NextResponse.json(
@@ -92,9 +98,10 @@ export async function GET(request: NextRequest) {
 }
 
 // POST: カートに商品を追加
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
-    const token = request.cookies.get('token')?.value
+    const cookieStore = cookies()
+    const token = cookieStore.get('token')?.value
 
     if (!token) {
       return NextResponse.json(

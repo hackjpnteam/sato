@@ -1,8 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
 import { connectToDatabase } from '@/lib/mongodb'
 import { ObjectId } from 'mongodb'
 import jwt from 'jsonwebtoken'
 import { z } from 'zod'
+
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+export const runtime = 'nodejs'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'default-secret-key-for-development'
 
@@ -27,9 +32,10 @@ const updateProfileSchema = z.object({
   name: z.string().min(1, '名前を入力してください')
 })
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
-    const token = request.cookies.get('token')?.value
+    const cookieStore = cookies()
+    const token = cookieStore.get('token')?.value
 
     if (!token) {
       return NextResponse.json(

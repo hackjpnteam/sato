@@ -1,7 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
 import { connectToDatabase } from '@/lib/mongodb'
 import { ObjectId } from 'mongodb'
 import jwt from 'jsonwebtoken'
+
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+export const runtime = 'nodejs'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'default-secret-key-for-development'
 
@@ -23,9 +28,10 @@ function verifyToken(token: string): JwtPayload | null {
 }
 
 // PUT: カート内のアイテム数量を更新
-export async function PUT(request: NextRequest, { params }: { params: { itemId: string } }) {
+export async function PUT(request: Request, { params }: { params: { itemId: string } }) {
   try {
-    const token = request.cookies.get('token')?.value
+    const cookieStore = cookies()
+    const token = cookieStore.get('token')?.value
 
     if (!token) {
       return NextResponse.json(
@@ -97,9 +103,10 @@ export async function PUT(request: NextRequest, { params }: { params: { itemId: 
 }
 
 // DELETE: カートからアイテムを削除
-export async function DELETE(request: NextRequest, { params }: { params: { itemId: string } }) {
+export async function DELETE(request: Request, { params }: { params: { itemId: string } }) {
   try {
-    const token = request.cookies.get('token')?.value
+    const cookieStore = cookies()
+    const token = cookieStore.get('token')?.value
 
     if (!token) {
       return NextResponse.json(
