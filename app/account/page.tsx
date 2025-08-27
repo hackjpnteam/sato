@@ -211,7 +211,7 @@ export default function AccountPage() {
       return
     }
 
-    setDeletingIds(prev => new Set([...prev, listingId]))
+    setDeletingIds(prev => new Set(Array.from(prev).concat(listingId)))
     try {
       const response = await fetch(`/api/user/listings?id=${listingId}`, {
         method: 'DELETE'

@@ -30,7 +30,7 @@ export default function CartPage() {
   const handleQuantityUpdate = async (listingId: string, newQuantity: number) => {
     if (newQuantity < 1) return
     
-    setUpdatingItems(prev => new Set([...prev, listingId]))
+    setUpdatingItems(prev => new Set(Array.from(prev).concat(listingId)))
     try {
       await updateQuantity(listingId, newQuantity)
     } finally {
@@ -43,7 +43,7 @@ export default function CartPage() {
   }
 
   const handleRemoveItem = async (listingId: string) => {
-    setRemovingItems(prev => new Set([...prev, listingId]))
+    setRemovingItems(prev => new Set(Array.from(prev).concat(listingId)))
     try {
       const success = await removeFromCart(listingId)
       if (success) {

@@ -142,7 +142,7 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
     const content = answerTexts[questionId]?.trim()
     if (!content) return
 
-    setSubmittingAnswers(prev => new Set([...prev, questionId]))
+    setSubmittingAnswers(prev => new Set(Array.from(prev).concat(questionId)))
     try {
       const response = await fetch(`/api/listings/${params.id}/questions/${questionId}/answers`, {
         method: 'POST',

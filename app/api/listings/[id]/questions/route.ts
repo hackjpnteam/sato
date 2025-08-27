@@ -52,7 +52,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
     .toArray()
 
     // ユーザー情報を取得
-    const userIds = [...new Set(questions.map(q => q.userId))]
+    const userIds = Array.from(new Set(questions.map(q => q.userId)))
     const users = await db.collection('users').find({
       _id: { $in: userIds.map(id => new ObjectId(id)) }
     }, {

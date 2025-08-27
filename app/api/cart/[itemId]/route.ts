@@ -140,7 +140,7 @@ export async function DELETE(request: Request, { params }: { params: { itemId: s
       {
         $pull: { 
           items: { listingId: itemId }
-        },
+        } as any,
         $set: { updatedAt: new Date() }
       }
     )

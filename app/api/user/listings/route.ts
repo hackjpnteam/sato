@@ -160,7 +160,7 @@ export async function DELETE(request: Request) {
       {
         $pull: {
           items: { listingId: new ObjectId(listingId) }
-        }
+        } as any
       }
     )
 

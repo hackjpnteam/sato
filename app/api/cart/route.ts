@@ -169,7 +169,7 @@ export async function POST(request: Request) {
             quantity,
             addedAt: new Date()
           }
-        }
+        } as any
       },
       { upsert: true }
     )
